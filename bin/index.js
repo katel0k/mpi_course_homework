@@ -79,13 +79,12 @@ function requestNextStep() {
     let protoField =  new FieldMessage.Field();
     protoField.setWidth(width);
     protoField.setHeight(height);
-    protoField.setFormat(FieldMessage.Field.Format.RAW_STRING);
     protoField.setRaw(
         field.map(a => a.join('')).join('')
     );
     return fetch('/next', {
         method: 'POST',
-        body: new Blob(protoField.serializeBinary(), {type: 'text/plain'})
+        body: protoField.serializeBinary()
     })
 }
 
@@ -103,10 +102,18 @@ function requestNextStep() {
 
 next_btn.addEventListener('click', function() {
     requestNextStep().then(
-        response => response.json()
+        response => response.text()
     ).then(
-        json => {
-            field = JSON.parse(json).field;
+        text => {
+            let [newWidth, newHeight, newField] = text.split(' ');
+            width = newWidth;
+            height = newHeight;
+            for (let i = 0; i < height; ++i) {
+                field[i] = [];
+                for (let j = 0; j < width; ++j) {
+                    field[i][j] = newField[i * width + j] == '0' ? Cell.DEAD : Cell.ALIVE;
+                }
+            }
             render();
         }
     );
@@ -116,10 +123,10 @@ let nextStepAnimator;
 
 start_btn.addEventListener('click', function onStartBtnClick() {
     requestNextStep().then(
-        response => response.json()
+        response => response.text()
     ).then(
-        json => {
-            field = JSON.parse(json).field;
+        text => {
+            text.split('\n').slice(10)
             render();
             nextStepAnimator = setTimeout(onStartBtnClick, intervalBetweenFrames);
         }

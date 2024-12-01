@@ -7,3 +7,7 @@ node_modules
 *_pb*
 package-lock.json
 bin/static/js/
+*.vtk
+*.raw
+buffer
+life_field.ml*

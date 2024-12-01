@@ -1,3 +1,4 @@
 (executable
  (name index)
- (libraries dream dream-html))
+ (libraries dream dream-html life_field)
+ (preprocess (pps lwt_ppx)))

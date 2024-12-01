@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv)
 {
-	life_t l = init(argc, argv);
+	life_t l = init(argc, argv, 0);
 
 	int i;
 	char buf[100];
@@ -17,5 +17,6 @@ int main(int argc, char **argv)
 	}
 
 	cleanup(&l);
+	MPI_Finalize();
 	return 0;
 }

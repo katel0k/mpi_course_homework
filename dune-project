@@ -24,9 +24,12 @@
   dune
   dream
   dream-html
+  ocaml-protoc
   (ocaml-lsp-server :dev)
   (ocamlformat :dev)
  )
  (tags
   (topics "to describe" your project))
  (allow_empty))
+
+; cd bin/proto; ocaml-protoc --binary --ml_out . *.proto
