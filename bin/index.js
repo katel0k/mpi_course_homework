@@ -1,3 +1,5 @@
+let FieldMessage = require('./protos/life_field_pb');
+
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext('2d');
 let next_btn = document.getElementById("next");
@@ -74,14 +76,16 @@ function requestPreset(preset) {
 }
 
 function requestNextStep() {
+    let protoField =  new FieldMessage.Field();
+    protoField.setWidth(width);
+    protoField.setHeight(height);
+    protoField.setFormat(FieldMessage.Field.Format.RAW_STRING);
+    protoField.setRaw(
+        field.map(a => a.join('')).join('')
+    );
     return fetch('/next', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify({
-            field, width, height
-        })
+        body: new Blob(protoField.serializeBinary(), {type: 'text/plain'})
     })
 }
 

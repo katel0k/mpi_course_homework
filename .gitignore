@@ -3,3 +3,7 @@ _build/
 *.out
 *.exe
 *vtk/
+node_modules
+*_pb*
+package-lock.json
+bin/static/js/

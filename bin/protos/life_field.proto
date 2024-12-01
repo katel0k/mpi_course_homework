@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package life_field;
+
+message Field {
+    int32 width = 1;
+    int32 height = 2;
+
+    enum Cell {
+        DEAD = 0;
+        ALIVE = 1;
+    }
+
+    enum Format {
+        RLE = 0;
+        VTK = 1;
+        RAW_STRING = 2; // a string with length width*height filled with Cells 
+    }
+
+    Format format = 3;
+
+    message VTKField {
+        message VTKCell {
+            int32 row = 1;
+            int32 col = 2;
+        }
+        repeated VTKCell cells = 1;
+    }
+
+    reserved 4; // for rle format
+    oneof field {
+        VTKField vtk = 5;
+        string raw = 6;
+    }
+}

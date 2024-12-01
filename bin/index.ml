@@ -16,7 +16,7 @@ let page =
         button [id "load"] [txt "load"]
       ];
       canvas [id "canvas"; width "600"; height "600"] [];
-      script [src "static/index.js"] ""
+      script [src "static/js/main.js"] ""
     ]
   ]
 
@@ -24,11 +24,7 @@ let index_handler _ =
   Dream_html.to_string page
   |> Dream.html
 
-
-(* let parse_json json = 
-  Yojson.Safe.from_string json  *)
-
-let static_file_handler = Dream.static "./bin/"
+let static_file_handler = Dream.static "./bin/static"
 
 let preset_handler request = Dream.from_filesystem "." (Dream.param request "preset_path") request
 
