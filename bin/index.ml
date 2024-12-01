@@ -24,17 +24,22 @@ let index_handler _ =
   Dream_html.to_string page
   |> Dream.html
 
-let static_file_handler = Dream.static "."
+
+(* let parse_json json = 
+  Yojson.Safe.from_string json  *)
+
+let static_file_handler = Dream.static "./bin/"
 
 let preset_handler request = Dream.from_filesystem "." (Dream.param request "preset_path") request
 
-(* let step_request = Dream.get "/next" *)
+(* let step_handler = ignore (Sys.command ""); Dream.from_filesystem "." "life/life.vtk" *)
 
 let () =
   Dream.run
   @@ Dream.logger
   @@ Dream.router [
     Dream.get "/" index_handler;
+    (* Dream.get "/next" step_handler; *)
     Dream.get "/static/**" static_file_handler;
     Dream.get "/preset/path:preset_path" preset_handler
   ]

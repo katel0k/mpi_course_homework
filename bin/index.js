@@ -37,11 +37,15 @@ canvas.addEventListener("click", function(e) {
         return;
     }
 
-    let col = Math.floor(e.clientX / Cell.RECT_WIDTH);
-    let row = Math.floor(e.clientY / Cell.RECT_HEGIHT);
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    let col = Math.floor(x / Cell.RECT_WIDTH);
+    let row = Math.floor(y / Cell.RECT_HEGIHT);
 
     if (row < height && col < width) {
-        field[row][col] = toggleCell(field[row][col]);
+        field[row][col] = Cell.toggleCell(field[row][col]);
     }
 
     render();
@@ -52,13 +56,18 @@ function render() {
         for (let j = 0; j < width; ++j) {
             let color = 'black';
             if (field[i][j] == Cell.ALIVE) {
-                color = 'whie';
+                color = 'white';
             }
             ctx.fillStyle = color;
             ctx.fillRect(j * Cell.RECT_WIDTH, i * Cell.RECT_HEGIHT, Cell.RECT_WIDTH, Cell.RECT_HEGIHT);
         }
     }
+    ctx.fill();
+    ctx.stroke();
 }
+
+render();
+is_active = true;
 
 function requestPreset(preset) {
     return fetch('/preset/' + preset);
@@ -71,7 +80,7 @@ function requestNextStep() {
             'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify({
-            field
+            field, width, height
         })
     })
 }
