@@ -7,7 +7,6 @@ let page =
     body [] [
       div [] [
         button [id "next"] [txt "next"];
-        button [id "prev"] [txt "prev"];
         button [id "start"] [txt "start"];
         button [id "stop"] [txt "stop"];
         select [id "preset"] [

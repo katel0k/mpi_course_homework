@@ -3,7 +3,6 @@ let FieldMessage = require('./protos/life_field_pb');
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext('2d');
 let next_btn = document.getElementById("next");
-let prev_btn = document.getElementById("prev");
 let start_btn = document.getElementById("start");
 let stop_btn = document.getElementById("stop");
 let preset_selector = document.getElementById("preset");
@@ -35,7 +34,7 @@ for (let i = 0; i < height; ++i) {
 }
 
 canvas.addEventListener("click", function(e) {
-    if (!is_active) {
+    if (is_active) {
         return;
     }
 
@@ -69,7 +68,7 @@ function render() {
 }
 
 render();
-is_active = true;
+is_active = false;
 
 function requestPreset(preset) {
     return fetch('/preset/' + preset);
@@ -88,65 +87,47 @@ function requestNextStep() {
     })
 }
 
-// function requestPrevStep() {
-//     return fetch('/prev', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json;charset=utf-8'
-//         },
-//         body: JSON.stringify({
-//             field
-//         })
-//     })
-// }
+function renderFromRaw(text) {
+    let [newWidth, newHeight, newField] = text.split(' ');
+    width = newWidth;
+    height = newHeight;
+    for (let i = 0; i < height; ++i) {
+        field[i] = [];
+        for (let j = 0; j < width; ++j) {
+            field[i][j] = newField[i * width + j] == '0' ? Cell.DEAD : Cell.ALIVE;
+        }
+    }
+    render();
+}
 
 next_btn.addEventListener('click', function() {
     requestNextStep().then(
         response => response.text()
-    ).then(
-        text => {
-            let [newWidth, newHeight, newField] = text.split(' ');
-            width = newWidth;
-            height = newHeight;
-            for (let i = 0; i < height; ++i) {
-                field[i] = [];
-                for (let j = 0; j < width; ++j) {
-                    field[i][j] = newField[i * width + j] == '0' ? Cell.DEAD : Cell.ALIVE;
-                }
-            }
-            render();
-        }
-    );
+    ).then(renderFromRaw);
 });
 
 let nextStepAnimator;
 
-start_btn.addEventListener('click', function onStartBtnClick() {
-    requestNextStep().then(
-        response => response.text()
-    ).then(
-        text => {
-            text.split('\n').slice(10)
-            render();
-            nextStepAnimator = setTimeout(onStartBtnClick, intervalBetweenFrames);
+start_btn.addEventListener('click', function() {
+    is_active = true;
+    (function onStartBtnClick() {
+        if (is_active) {
+            requestNextStep().then(
+                response => response.text()
+            ).then(
+                text => {
+                    renderFromRaw(text);
+                    nextStepAnimator = setTimeout(onStartBtnClick, intervalBetweenFrames);
+                }
+            );
         }
-    );
+    })();
 });
 
 stop_btn.addEventListener('click', function() {
+    is_active = false;
     clearTimeout(nextStepAnimator);
 });
-
-// prev_btn.addEventListener('click', function() {
-//     requestNextStep().then(
-//         response => response.json()
-//     ).then(
-//         json => {
-//             field = JSON.parse(json).field;
-//             render();
-//         }
-//     );
-// });
 
 load_btn.addEventListener('click', function() {
     requestPreset(preset_selector.value)
