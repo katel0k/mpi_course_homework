@@ -1,2 +1,5 @@
 _opam/
 _build/
+*.out
+*.exe
+*vtk/
