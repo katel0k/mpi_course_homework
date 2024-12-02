@@ -1,13 +1,6 @@
 #include "life_lib.h"
 #include <mpi.h>
 
-void _life_init(life_t *l) {
-	MPI_Comm_size(MPI_COMM_WORLD, &(l->size));
-	MPI_Comm_rank(MPI_COMM_WORLD, &(l->rank));
-    l->start = get_start(l->rank, l->size, l->ny);
-    l->stop = l->start + get_rows(l->rank, l->size, l->ny);
-}
-
 /**
  * Загрузить входную конфигурацию.
  * Формат файла, число шагов, как часто сохранять, размер поля, затем идут координаты заполненых клеток:
@@ -59,6 +52,7 @@ void life_free(life_t *l)
 	free(l->u0);
 	free(l->u1);
 	l->nx = l->ny = 0;
+    _life_free(l);
 }
 
 life_t init(int argc, char **argv, int is_raw) {
@@ -83,6 +77,7 @@ void cleanup(life_t *l) {
 
 void life_save_vtk(const char *path, life_t *l)
 {
+    _life_collect(l);
     if (l->rank == 0) {
         FILE *f;
         f = fopen(path, "w");
@@ -98,10 +93,7 @@ void life_save_vtk(const char *path, life_t *l)
 
         fprintf(f, "SCALARS life int 1\n");
         fprintf(f, "LOOKUP_TABLE life_table\n");
-        for (int i = 1; i < l->size; ++i) {
-            MPI_Recv(l->u0 + i * (l->ny / l->size) * l->nx, get_rows(i, l->size, l->ny) * l->nx,
-                    MPI_INT, i, SAVE_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
+        
         for (int i2 = 0; i2 < l->ny; i2++) {
             for (int i1 = 0; i1 < l->nx; i1++) {
                 fprintf(f, "%d\n", l->u0[ind(i1, i2)]);
@@ -109,56 +101,19 @@ void life_save_vtk(const char *path, life_t *l)
         }
         fclose(f);
     }
-    else {
-        MPI_Send(l->u0 + l->start * l->nx, get_rows(l->rank, l->size, l->ny) * l->nx, MPI_INT, 0, SAVE_TAG, MPI_COMM_WORLD);
-    }
 }
 
 void life_save_raw(const char *path, life_t *l) {
+    _life_collect(l);
 	if (l->rank == 0) {
         FILE *f;
         f = fopen(path, "w");
         assert(f);
 		fprintf(f, "%d %d ", l->nx, l->ny);
-        for (int i = 1; i < l->size; ++i) {
-            MPI_Recv(l->u0 + i * (l->ny / l->size) * l->nx, get_rows(i, l->size, l->ny) * l->nx,
-                    MPI_INT, i, SAVE_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
 		for (int i = 0; i < l->nx * l->ny; ++i) {
 			fprintf(f, "%d", l->u0[i]);
 		}
         fclose(f);
     }
-    else {
-        MPI_Send(l->u0 + l->start * l->nx, get_rows(l->rank, l->size, l->ny) * l->nx, MPI_INT, 0, SAVE_TAG, MPI_COMM_WORLD);
-    }
 }
 
-void life_step(life_t *l)
-{
-	life_get_data(l);
-
-	for (int j = l->start; j < l->stop; j++) {
-		for (int i = 0; i < l->nx; i++) {
-			int n = 0;
-			n += l->u0[ind(i+1, j)];
-			n += l->u0[ind(i+1, j+1)];
-			n += l->u0[ind(i,   j+1)];
-			n += l->u0[ind(i-1, j)];
-			n += l->u0[ind(i-1, j-1)];
-			n += l->u0[ind(i,   j-1)];
-			n += l->u0[ind(i-1, j+1)];
-			n += l->u0[ind(i+1, j-1)];
-			l->u1[ind(i,j)] = 0;
-			if (n == 3 && l->u0[ind(i,j)] == 0) {
-				l->u1[ind(i,j)] = 1;
-			}
-			if ((n == 3 || n == 2) && l->u0[ind(i,j)] == 1) {
-				l->u1[ind(i,j)] = 1;
-			}
-		}
-	}
-	int *tmp = l->u0;
-	l->u0 = l->u1;
-	l->u1 = tmp;
-}

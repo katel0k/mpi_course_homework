@@ -13,7 +13,7 @@ int dec(int rank, int size);
 int get_rows(int rank, int size, int n);
 int get_start(int rank, int size, int n);
 
-#define ind(i, j) ((i + l->nx) % l->nx + (j + l->ny) % l->ny * l->nx)
+#define ind(x, y) ((x + l->nx) % l->nx + (y + l->ny) % l->ny * l->nx)
 #define SAVE_TAG 98
 #define TAG 99
 
@@ -38,7 +38,9 @@ void life_free(life_t *l);
 void life_step(life_t *l);
 void life_save_vtk(const char *path, life_t *l);
 void life_save_raw(const char *path, life_t *l);
-
+void _life_init(life_t *l);
+void _life_collect(life_t *l);
+void _life_free(life_t *l);
 void life_get_data(life_t *l);
 
 #endif
