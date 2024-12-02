@@ -23,14 +23,14 @@ let index_handler _ =
   Dream_html.to_string page
   |> Dream.html
 
-let static_folder = "./bin/static"
+let static_folder = "./static"
 
 let static_file_handler = Dream.static static_folder
 
 let preset_handler request = Dream.from_filesystem static_folder (Dream.param request "preset_path") request
 
 let buffer_saver body =
-  let buffer_file = open_out "buffer" in
+  let buffer_file = open_out "tmp/buffer" in
     Printf.fprintf buffer_file "%s" body;
     close_out buffer_file
 
@@ -45,7 +45,7 @@ let proto_parser inner_handler request =
 
 
 let step_handler request =
-  ignore (Sys.command "mpiexec -n 8 bin/life/one_step.exe buffer");
+  ignore (Sys.command "mpiexec -n 8 life/build/one_step.exe tmp/buffer");
   Dream.from_filesystem "." "life.raw" request
 
 let () =

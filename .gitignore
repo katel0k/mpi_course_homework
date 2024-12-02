@@ -6,8 +6,9 @@ _build/
 node_modules
 *_pb*
 package-lock.json
-bin/static/js/
+*static/js/
 *.vtk
 *.raw
 buffer
 life_field.ml*
+build/

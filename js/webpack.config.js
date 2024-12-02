@@ -4,7 +4,7 @@ module.exports = {
 	entry: './index.js',
 	mode: 'none',
 	output: {
-		path: path.resolve('./static/js'),
+		path: path.resolve('../static/js'),
 		filename: '[name].js',
 	},
 	resolve: {

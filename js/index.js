@@ -1,4 +1,4 @@
-let FieldMessage = require('./protos/life_field_pb');
+let FieldMessage = require('./build/life_field_pb');
 
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext('2d');

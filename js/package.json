@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "cd protos; protoc --js_out=import_style=commonjs,binary:. *.proto; cd ..; webpack",
-    "watch": "cd protos; protoc --js_out=import_style=commonjs,binary:. *.proto; cd ..; export NODE_OPTIONS=--openssl-legacy-provider && webpack --watch"
+    "build": "cd ../protos; protoc --js_out=import_style=commonjs,binary:../js/build *.proto; cd ../js; webpack",
+    "watch": "cd ../protos; protoc --js_out=import_style=commonjs,binary:../js/build *.proto; cd ../js; export NODE_OPTIONS=--openssl-legacy-provider && webpack --watch"
   },
   "author": "",
   "license": "ISC",
