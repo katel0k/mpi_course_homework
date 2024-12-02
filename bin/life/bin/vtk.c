@@ -1,4 +1,4 @@
-#include "life_lib.h"
+#include "../life_lib.h"
 #include <mpi.h>
 
 int main(int argc, char **argv)
