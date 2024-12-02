@@ -132,20 +132,7 @@ stop_btn.addEventListener('click', function() {
 load_btn.addEventListener('click', function() {
     requestPreset(preset_selector.value)
     .then(
-        response => response.json()
+        response => response.text()
     )
-    .then(
-        json => {
-            let newField = json.field;
-            width = json.width;
-            height = json.height;
-            for (let i = 0; i < height; ++i) {
-                field[i] = [];
-                for (let j = 0; j < width; ++j) {
-                    field[i][j] = newField[i][j] == '0' ? Cell.DEAD : Cell.ALIVE;
-                }
-            }
-            render();
-        }
-    )
+    .then(renderFromRaw);
 });
