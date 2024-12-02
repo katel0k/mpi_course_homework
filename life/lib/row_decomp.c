@@ -10,24 +10,24 @@ void _life_init(life_t *l) {
 
 void _life_free(life_t *) {}
 
-void send_prev(life_t *l) {
-	int num_of_prev_rows = get_rows(dec(l->rank, l->size), l->size, l->ny);
-	MPI_Sendrecv(
-		l->u0 + l->start * l->nx, l->nx * get_rows(l->rank, l->size, l->ny),
-		MPI_INT, dec(l->rank, l->size), TAG,
-		l->u0 + (l->start - num_of_prev_rows + l->ny) % l->ny * l->nx, l->nx * num_of_prev_rows,
-		MPI_INT, dec(l->rank, l->size), TAG,
+void send_next(life_t *l) {
+	MPI_Send(
+		l->u0 + dec(l->stop, l->nx) * l->nx, l->nx,
+		MPI_INT, inc(l->rank, l->size), TAG, MPI_COMM_WORLD);
+	MPI_Recv(
+		l->u0 + inc(l->stop, l->nx) * l->nx, l->nx,
+		MPI_INT, inc(l->rank, l->size), TAG,
 		MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 }
 
-void send_next(life_t *l) {
-	MPI_Sendrecv(
-		l->u0 + l->start * l->nx, l->nx * get_rows(l->rank, l->size, l->ny), 
-		MPI_INT, inc(l->rank, l->size), TAG,
-		l->u0 + (l->start + get_rows(l->rank, l->size, l->ny)) % l->ny * l->nx,
-		l->nx * get_rows(inc(l->rank, l->size), l->size, l->ny),
-		MPI_INT, inc(l->rank, l->size), TAG,
+void send_prev(life_t *l) {
+	MPI_Recv(
+		l->u0 + dec(l->start, l->nx) * l->nx, l->nx,
+		MPI_INT, dec(l->rank, l->size), TAG,
 		MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	MPI_Send(
+		l->u0 + l->start * l->nx, l->nx, 
+		MPI_INT, dec(l->rank, l->size), TAG, MPI_COMM_WORLD);
 }
 
 void life_get_data(life_t *l) {
