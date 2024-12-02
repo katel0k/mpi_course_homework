@@ -10,7 +10,7 @@ let page =
         button [id "start"] [txt "start"];
         button [id "stop"] [txt "stop"];
         select [id "preset"] [
-          option [value "glider"] "glider"
+          option [value "glider.raw"] "glider"
         ];
         button [id "load"] [txt "load"]
       ];
@@ -24,10 +24,11 @@ let index_handler _ =
   |> Dream.html
 
 let static_folder = "./static"
+let preset_static_folder = static_folder ^ "/preset"
 
 let static_file_handler = Dream.static static_folder
 
-let preset_handler request = Dream.from_filesystem static_folder (Dream.param request "preset_path") request
+let preset_handler request = Dream.from_filesystem preset_static_folder (Dream.param request "preset_path") request
 
 let buffer_saver body =
   let buffer_file = open_out "tmp/buffer" in
@@ -55,5 +56,5 @@ let () =
     Dream.get "/" index_handler;
     Dream.post "/next" (proto_parser @@ step_handler);
     Dream.get "/static/**" static_file_handler;
-    Dream.get "/preset/path:preset_path" preset_handler
+    Dream.get "/preset/:preset_path" preset_handler
   ]
