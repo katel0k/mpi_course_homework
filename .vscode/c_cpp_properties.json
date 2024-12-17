@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/lib/x86_64-linux-gnu/mpich/include"
+                "/usr/lib/x86_64-linux-gnu/mpich/include",
+                "/usr/include"
             ],
             "defines": [],
             "cStandard": "c17",

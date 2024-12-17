@@ -19,3 +19,6 @@ one_scat:
 
 one_dec:
 	mpicc -g bin/one_step.c $(dec_lib) $(lib) $(inc) -o build/one_step.exe -lm
+
+time_dec:
+	mpicc -g bin/time.c $(dec_lib) $(lib) $(inc) -o build/time.exe -lm

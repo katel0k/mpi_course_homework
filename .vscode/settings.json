@@ -3,5 +3,5 @@
         "stddef.h": "c",
         "life_lib.h": "c"
     },
-    "C_Cpp.default.compilerPath": "/usr/bin/g++"
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc"
 }
